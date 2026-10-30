@@ -1,27 +1,69 @@
 # missioner and cannibals 
+from collections import deque
 
-m = 3
-c = 3
+def solve():
 
-while m > 0 or c > 0:
-    if c == 3:
-        c = c - 2
-        print("2 Cannibals cross")
+    M = int(input("Enter number of Missionaries: "))
+    C = int(input("Enter number of Cannibals: "))
+    capacity = int(input("Enter boat capacity: "))
 
-    elif c == 1:
-        c = c + 1
-        print("1 Cannibal returns")
+    start = (M, C, 0)
+    goal = (0, 0, 1)
 
-    elif c == 2 and m == 3:
-        c = c - 2
-        print("2 Cannibals cross")
+    queue = deque([(start, [start])])
+    visited = []
 
-    elif c == 0 and m == 3:
-        m = m - 2
-        print("2 Missionaries cross")
+    moves = []
 
-    else:
-        break
+    for x in range(capacity + 1):
+        for y in range(capacity + 1):
+            if 1 <= x + y <= capacity:
+                moves.append((x, y))
 
-    print("Missionaries left:", m)
-    print("Cannibals left:", c)
+    while queue:
+
+        state, path = queue.popleft()
+
+        m, c, boat = state
+
+        if state == goal:
+            print("\nSolution:")
+            for step in path:
+                print(step)
+
+            print("\nGOAL ACCOMPLISHED!")
+            return
+
+        if state in visited:
+            continue
+
+        visited.append(state)
+
+        for x, y in moves:
+
+            if boat == 0:
+                new_m = m - x
+                new_c = c - y
+                new_boat = 1
+            else:
+                new_m = m + x
+                new_c = c + y
+                new_boat = 0
+
+            if 0 <= new_m <= M and 0 <= new_c <= C:
+
+                right_m = M - new_m
+                right_c = C - new_c
+
+                if (new_m == 0 or new_m >= new_c) and \
+                   (right_m == 0 or right_m >= right_c):
+
+                    new_state = (new_m, new_c, new_boat)
+
+                    if new_state not in visited:
+                        queue.append((new_state, path + [new_state]))
+
+    print("\nNo solution exists!")
+
+solve()
+
